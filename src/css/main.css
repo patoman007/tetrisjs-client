@@ -1,0 +1,195 @@
+@font-face {
+  font-family: 'Pixel';
+  src: url('../assets/pixel.ttf');
+}
+
+body {
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  background-color: #303030;
+}
+
+.container {
+  height: 100%;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.container .score {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.container  .score p {
+  color: #FAFAFA;
+  font-family: Pixel, Arial, Helvetica, sans-serif;
+}
+
+.container .score p span {
+  font-weight: bold;
+}
+
+.container .local-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1 1;
+}
+
+.container .local-container .start-btn {
+  display: inline-block;
+  padding: 10px 5px;
+  color: gray;
+  text-align: center;
+  font-family: Pixel, Arial, Helvetica, sans-serif;
+
+  cursor: pointer;
+  background-color: #d3d3d3;
+  border-radius: 8px;
+  box-shadow: 0 .2rem gray;
+}
+
+.container .local-container .start-screen {
+  display: block;
+  padding: 18px;
+  text-align: center;
+  background-color: rgba(120, 120, 120, 0.2);
+  border-radius: 12px;
+}
+
+.container .local-container .start-screen label {
+  color: #D2D2D2;
+  font-family: Pixel, 'sans';
+  font-size: 12px;
+}
+
+.container .local-container .start-screen input[type="text"] {
+  display: block;
+  max-width: 160px;
+  padding: 10px;
+  margin: 18px auto;
+  font-family: Pixel, 'sans-serif';
+  font-size: 12px;
+  border-radius: 5px;
+  border: 1px solid #D2D2D2;
+}
+
+.container .local-container .start-screen .text-error {
+  text-align: center;
+  font-family: Pixel, 'sans-serif';
+  font-size: 10px;
+  color: #FA6464;
+}
+
+.container .local-container .score p {
+  padding: 10px 0;
+  margin: 0;
+  font-size: 14px;
+}
+
+.container .local-container .game {
+  height: 100%;
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.container .local-container .game section {
+  text-align: center;
+}
+
+.container .local-container .game .restart-container {
+  text-align: center;
+}
+
+.container .local-container .controls {
+  display: flex;
+  padding: 0 12px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.container .local-container .controls > div {
+  margin: 4px 0;
+}
+
+.container .local-container .controls > div > div {
+  margin: 6px 0;
+}
+
+.container .local-container .game canvas {
+  margin: 10px 0;
+  border: 1px solid lightgray;
+  cursor: none;
+}
+
+.container .remote-container {
+  height: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  align-items: center;
+  flex: 1 1;
+}
+
+.container .remote-container .score p {
+  padding: 5px 0;
+  margin: 0;
+  font-size: 11px;
+}
+
+.container .remote-container .remote-game {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.container .remote-container .remote-game canvas {
+  border: 1px solid darkgray;
+}
+
+.container .remote-container .remote-player-name {
+  width: 100%;
+}
+
+.container .remote-container .remote-player-name p {
+  text-align: center;
+  font-size: 11px;
+  font-family: Pixel, 'sans-serif';
+  color: #D2D2D2;
+  text-overflow: ellipsis;
+}
+
+.keyboard-button {
+  width: 32px;
+  height: 32px;
+  display: inline-block;
+  margin: 2px;
+
+  color: #888;
+  font-size: 14px;
+  font-family: Pixel, sans-serif;
+  text-align: center;
+
+  cursor: pointer;
+  line-height: 32px;
+
+  background: -webkit-linear-gradient(top, #f9f9f9 0%, #D2D2D2 80%, #c0c0c0 100%);
+  border-radius: 8px;
+  box-shadow: 0.05rem 0.2rem gray;
+
+  transition: box-shadow 0.3s ease, transform 0.15s ease;
+}
+
+.keyboard-space {
+  width: 105px;
+}
+
+.keyboard-button-active {
+  transform: translateY(4px);
+}
