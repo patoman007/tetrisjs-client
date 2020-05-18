@@ -1,4 +1,4 @@
-import storageManager from '../storageManager';
+import storageManager from '../managers/storageManager';
 
 const HTML_ATTRIBUTES = {
   id: 'id',

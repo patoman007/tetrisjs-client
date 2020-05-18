@@ -1,4 +1,9 @@
-export default class InputHandler {
+const KEY_EVENTS = [
+  'keydown',
+  'keyup'
+];
+
+export default class InputManager {
 
   constructor(element) {
     this.handlers = {
@@ -28,7 +33,7 @@ export default class InputHandler {
       return;
     }
 
-    ['keydown', 'keyup'].forEach((eventName) => {
+    KEY_EVENTS.forEach((eventName) => {
       element.addEventListener(eventName, (event) => this._handleEvent(event));
     });
   }

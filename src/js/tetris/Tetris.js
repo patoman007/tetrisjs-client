@@ -2,7 +2,8 @@ import { getRandomPiece } from './pieces.js';
 
 import Arena, { ARENA_EVENTS } from './Arena.js';
 import Player, { PLAYER_EVENTS } from './Player.js';
-import EventsManager from '../EventsManager.js';
+import EventsManager from '../managers/EventsManager.js';
+import LeadersBoardManager from '../managers/LeadersBoardManager.js';
 
 const LINES_MESSAGES = [null, null, 'DOBLE 🙌', 'TRIPLE ✨', 'TETRIS 🎉'];
 const LINES_MESSAGES_DELAY = 750;  // ms
@@ -20,7 +21,7 @@ export const TETRIS_EVENTS = {
   score: {
     hasChanged: 'score-has-changed-event'
   }
-}
+};
 
 export default class Tetris {
 
@@ -34,6 +35,7 @@ export default class Tetris {
     this.arena = new Arena();
     this.player = new Player();
     this.eventsManager = new EventsManager();
+    this.leadersBoardManager = new LeadersBoardManager();
 
     this._setupArena(this.arena);
     this._setupPlayer(this.player);
@@ -83,9 +85,30 @@ export default class Tetris {
   _onGameOver(arena, player, context) {
     arena.makePiecesGray(context);
     player.update(context);
-    this._updateMessageLayer(GAME_OVER_MESSAGE, context, arena);
 
+    this._updateMessageLayer(GAME_OVER_MESSAGE, context, arena);
+    this._persistGameOnFirebase(arena, player);
     this.eventsManager.emit(TETRIS_EVENTS.gameOver);
+  }
+
+  _persistGameOnFirebase(arena, player) {
+    const gameResult = {
+      playerName: player.name,
+      points: arena.points,
+      linesCount: arena.linesCount,
+      doublesCount: arena.doublesCount,
+      triplesCount: arena.triplesCount,
+      tetrisCount: arena.tetrisCount,
+      timestamp: new Date().toUTCString()
+    };
+
+    this.leadersBoardManager.writeGameIntoBoard(gameResult)
+      .then(function(docRef) {
+        console.log('Document written with ID: ', docRef.id);
+      })
+      .catch(function(error) {
+        console.error('Error adding document: ', error);
+      });
   }
 
   _resetPlayer(player, arena) {
@@ -101,7 +124,7 @@ export default class Tetris {
 
   _setupArena(arena) {
     arena.on(ARENA_EVENTS.lines.completed, (linesLength) => {
-      this._updateScore(arena.numberOfLines, arena.points);
+      this._updateScore(arena.linesCount, arena.points);
       this.message = LINES_MESSAGES[linesLength];
       setTimeout(() => { this.message = null; }, LINES_MESSAGES_DELAY);
     });

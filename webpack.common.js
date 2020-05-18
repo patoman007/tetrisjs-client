@@ -8,14 +8,22 @@ module.exports = {
   },
   module: {
     rules: [
-      { test: /\.css$/, loader: 'style-loader!css-loader' },
-      { test: /\.(ttf|woff|woff2)$/, loader: 'file-loader?name=fonts/[name].[ext]' }
+      { test: /\.css$/i, loader: 'style-loader!css-loader' },
+      { test: /\.(ttf|woff|woff2)$/i, loader: 'file-loader?name=fonts/[name].[ext]' }
     ]
   },
   plugins: [
     new CleanWebpackPlugin(),
     new HtmlPlugin({
-      title: 'Tetris JS',
+      favicon: path.resolve(__dirname, 'src', 'img', 'shapes.png'),
+      meta: {
+        'viewport': 'width=device-width, initial-scale=1, shrink-to-fit=no',
+        'X-UA-Compatible': { 
+          'http-equiv': 'X-UA-Compatible', 
+          'content': 'IE=edge'
+        }
+      },
+      title: 'Tetris JS'
     })
   ],
   output: {

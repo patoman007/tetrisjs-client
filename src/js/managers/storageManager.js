@@ -22,4 +22,6 @@ class StorageManager {
 
 }
 
-export default new StorageManager();
+const storageManager = new StorageManager();
+
+export default storageManager;

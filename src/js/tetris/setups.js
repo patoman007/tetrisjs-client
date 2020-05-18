@@ -1,6 +1,6 @@
 import { TETRIS_EVENTS } from './Tetris.js';
 import * as uiUtils from './ui-utils.js';
-import storageManager from '../storageManager';
+import storageManager from '../managers/storageManager';
 
 function addClass(element, className) {
   if (element == null) { return; }
@@ -36,7 +36,10 @@ function onStartButtonClicked(tetris, timer, startCallback) {
     return;
   }
 
-  persistPlayerName(inputName);
+  const playerName = inputName.value.toUpperCase();
+  storageManager.persistPlayerName(playerName);
+  tetris.player.name = playerName;
+  
   showGameplay();
 
   tetris.reset();
@@ -46,10 +49,6 @@ function onStartButtonClicked(tetris, timer, startCallback) {
   if (startCallback != null) {
     startCallback.call();
   }
-}
-
-function persistPlayerName(inputName) {
-  storageManager.persistPlayerName(inputName.value);
 }
 
 function showGameplay() {

@@ -1,6 +1,6 @@
-import * as MESSAGES from '../../../../shared/messages.js';
+import * as MESSAGES from '../messages.js';
 import TetrisEventsHandler from './TetrisEventsHandler.js';
-import storageManager from '../storageManager.js';
+import storageManager from '../managers/storageManager.js';
 
 export default class ConnectionManager {
 

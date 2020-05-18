@@ -1,6 +1,6 @@
 import { piecesColors } from './pieces.js';
 import emptyMatrix from '../utils.js';
-import EventsManager, {} from '../EventsManager.js';
+import EventsManager, {} from '../managers/EventsManager.js';
 
 const PLAYER_COORDINATES = {
   x: 'x',
@@ -19,6 +19,7 @@ export const PLAYER_EVENTS = {
 export default class Player {
 
   constructor(piece) {
+    this.name = null;
     this.position = { x: 0, y: 0 };
     this.eventsManager = new EventsManager();
 

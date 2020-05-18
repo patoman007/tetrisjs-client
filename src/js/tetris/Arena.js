@@ -1,6 +1,6 @@
 import emptyMatrix from '../utils.js';
 import { piecesColors } from './pieces.js';
-import EventsManager from '../EventsManager.js';
+import EventsManager from '../managers/EventsManager.js';
 
 export const ARENA_EVENTS = {
   lines: {
@@ -17,9 +17,13 @@ export default class Arena {
     this.rows = rows;
     this.cols = cols;
 
-    this.numberOfLines = 0;
     this.points = 0;
+    this.linesCount = 0;
+    this.doublesCount = 0;
+    this.triplesCount = 0;
+    this.tetrisCount = 0;
     this.matrix = emptyMatrix(rows, cols);
+
     this.eventsManager = new EventsManager();
   }
 
@@ -88,8 +92,13 @@ export default class Arena {
     const linesLength = completedLines.length;
     if (linesLength === 0) { return; }
 
-    this.numberOfLines += linesLength;
+    
     this.points += 10 * Math.pow(3, linesLength - 1);
+    this.linesCount += linesLength;
+    this.doublesCount += linesLength === 2 ? 1 : 0;
+    this.triplesCount += linesLength === 3 ? 1 : 0;
+    this.tetrisCount += linesLength === 4 ? 1 : 0;
+
     this._removeCompletedLines(matrix, completedLines);
 
     this._emitLinesCompletedEvent(linesLength);
@@ -179,8 +188,11 @@ export default class Arena {
   }
 
   reset() {
-    this.numberOfLines = 0;
+    this.linesCount = 0;
     this.points = 0;
+    this.doublesCount = 0;
+    this.triplesCount = 0;
+    this.tetrisCount = 0;
     this.matrix.forEach((row) => row.fill(0));
 
     this._emitMatrixHasChangedEvent();

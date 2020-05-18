@@ -1,5 +1,5 @@
 import { TETRIS_EVENTS } from '../tetris/Tetris.js';
-import * as MESSAGES from '../../../../shared/messages.js';
+import * as MESSAGES from '../messages.js';
 
 const EVENTS = [
   TETRIS_EVENTS.player.position,

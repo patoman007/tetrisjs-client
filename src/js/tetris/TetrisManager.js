@@ -3,8 +3,8 @@ import * as setups from './setups.js';
 
 import Tetris from './Tetris.js';
 import Timer from '../Timer.js';
-import InputHandler from '../InputHandler.js';
-import EventsManager from '../EventsManager.js';
+import InputManager from '../managers/InputManager.js';
+import EventsManager from '../managers/EventsManager.js';
 
 export const TETRIS_MANAGER_EVENTS = {
   players: {
@@ -89,7 +89,7 @@ export default class TetrisManager {
 
     this._inflateLocalGameplay(scoreSection, canvasSection, startButton);
 
-    const input = new InputHandler(document);
+    const input = new InputManager(document);
     const tetris = new Tetris(context);
     const timer = new Timer();
 

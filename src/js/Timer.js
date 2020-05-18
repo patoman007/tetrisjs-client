@@ -1,4 +1,5 @@
 export default class Timer {
+
   constructor(deltaTime = 1 / 36) {
     this.updateProxy = this.createUpdateProxy(deltaTime);
   }
@@ -36,4 +37,5 @@ export default class Timer {
   stop() {
     this.update = () => {};
   }
+  
 }

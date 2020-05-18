@@ -1,7 +1,9 @@
 import './css/main.css';
 
 import ConnectionManager from './js/connection/ConnectionManager.js';
-import TetrisManager, { TETRIS_MANAGER_EVENTS } from './js/tetris/TetrisManager.js';
+import TetrisManager, { 
+  TETRIS_MANAGER_EVENTS 
+} from './js/tetris/TetrisManager.js';
 
 const host = 'ws://tetris-server.herokuapp.com';
 
