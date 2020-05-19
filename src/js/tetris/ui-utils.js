@@ -1,4 +1,5 @@
 import storageManager from '../managers/storageManager';
+import { gameResultModel } from '../managers/leadersBoardManager';
 
 const HTML_ATTRIBUTES = {
   id: 'id',
@@ -26,13 +27,25 @@ const CLASS_NAMES = {
   },
   container: 'container',
   containers: {
+    gamesBoard: 'games-board-container',
     local: 'local-container',
+    localMain: 'local-main-container',
     remote: 'remote-container',
     restart: 'restart-container'
   },
   controls: 'controls',
   errors: {
     text: 'text-error'
+  },
+  gamesBoard: {
+    board: 'games-board',
+    headerRow: 'games-board-header-row',
+    row: 'games-board-row'
+  },
+  loader: {
+    spinner: 'spinner',
+    cubeOne: 'cube-one',
+    cubeTwo: 'cube-two'
   },
   players: {
     local: 'game',
@@ -51,6 +64,7 @@ const CLASS_NAMES = {
 const COMPONENTS = {
   controls: 'controlsComponent',
   game: 'gameComponent',
+  gamesBoard: 'gamesBoardComponent',
   start: 'startComponent'
 };
 
@@ -66,14 +80,105 @@ function createCanvasSection(width, height, scaleX, scaleY) {
 }
 
 function createContainerElement() {
-  const containerElement = document.createElement(HTML_ELEMENTS.div);
-  containerElement.classList.add(CLASS_NAMES.container);
-  return containerElement;
+  const element = document.createElement(HTML_ELEMENTS.div);
+  
+  element.classList.add(CLASS_NAMES.container);
+
+  return element;
+}
+
+function createGamesBoardContainerElement() {
+  const element = document.createElement(HTML_ELEMENTS.div);
+  
+  element.setAttribute(HTML_ATTRIBUTES.id, COMPONENTS.gamesBoard);
+  element.classList.add(CLASS_NAMES.containers.gamesBoard);
+
+  return element;
+}
+
+function createGamesBoardElement() {
+  const element = document.createElement(HTML_ELEMENTS.div);
+  
+  element.classList.add(CLASS_NAMES.gamesBoard.board);
+  
+  return element;
+}
+
+function createGamesBoardHeaderRow(properties) {
+  const getLabelForProperty = (property) => {
+    switch (property) {
+      case gameResultModel.playerName: return 'Jugador';
+      case gameResultModel.points: return 'Puntos';
+      case gameResultModel.linesCount: return 'Líneas';
+      case gameResultModel.doublesCount: return 'Dobles';
+      case gameResultModel.triplesCount: return 'Triples';
+      case gameResultModel.tetrisCount: return 'Tetris';
+      default: return property;
+    }
+  };
+
+  const row = document.createElement(HTML_ELEMENTS.div);
+
+  row.classList.add(CLASS_NAMES.gamesBoard.headerRow);
+
+  properties.forEach((property) => {
+    const span = document.createElement(HTML_ELEMENTS.span);
+    span.innerText = getLabelForProperty(property);
+    row.appendChild(span);
+  });
+
+  return row;
+}
+
+function createGamesBoardGameRow(game, gameIndex, properties) {
+  const row = document.createElement(HTML_ELEMENTS.div);
+  
+  row.classList.add(CLASS_NAMES.gamesBoard.row);
+  properties.forEach((property) => {
+    const span = document.createElement(HTML_ELEMENTS.span);
+    span.innerText = game[property] || `${gameIndex + 1}`;
+    row.appendChild(span);
+  });
+
+  return row;
+}
+
+function createGamesBoardLoaderElement() {
+  const container = document.createElement(HTML_ELEMENTS.div);
+  const cubeOne = document.createElement(HTML_ELEMENTS.div);
+  const cubeTwo = document.createElement(HTML_ELEMENTS.div);
+
+  container.classList.add(CLASS_NAMES.loader.spinner);
+  cubeOne.classList.add(CLASS_NAMES.loader.cubeOne);
+  cubeTwo.classList.add(CLASS_NAMES.loader.cubeTwo);
+
+  container.appendChild(cubeOne);
+  container.appendChild(cubeTwo);
+
+  return container;
+}
+
+function createLocalContainerElement() {
+  const element = document.createElement(HTML_ELEMENTS.div);
+  
+  element.classList.add(CLASS_NAMES.containers.local);
+  
+  return element;
+}
+
+function createLocalMainContainerElement() {
+  const element = document.createElement(HTML_ELEMENTS.div);
+
+  element.classList.add(CLASS_NAMES.containers.localMain);
+
+  return element;
 }
 
 function createRemoteContainerElement() {
   const element = document.createElement(HTML_ELEMENTS.div);
+
   element.classList.add(CLASS_NAMES.containers.remote);
+
   return element;
 }
 
@@ -88,6 +193,7 @@ function createRemotePlayerContainerElement(clientId) {
 
 function createRestartContainer() {
   const element = document.createElement(HTML_ELEMENTS.div);
+  
   element.classList.add(CLASS_NAMES.containers.restart);
 
   return element;
@@ -101,6 +207,26 @@ function createRestartButton(callback) {
   element.innerText = 'Jugar de nuevo';
 
   return element;
+}
+
+function getGamesBoardContainerElement() {
+  const element = document.querySelector(`#${COMPONENTS.gamesBoard}`);
+  return element || createGamesBoardContainerElement();
+}
+
+function getGamesBoardElement() {
+  const element = document.querySelector(`.${CLASS_NAMES.gamesBoard.board}`);
+  return element || createGamesBoardElement();
+}
+
+function getGamesBoardHeaderRow(properties) {
+  const element = document.querySelector(`.${CLASS_NAMES.gamesBoard.headerRow}`);
+  return element || createGamesBoardHeaderRow(properties);
+}
+
+function getGamesBoardLoaderElement() {
+  const element = document.querySelector(`.${CLASS_NAMES.loader.spinner}`);
+  return element || createGamesBoardLoaderElement();
 }
 
 function getErrorMessageElement() {
@@ -117,7 +243,8 @@ function getErrorMessageElement() {
 }
 
 function recreateControlsComponent() {
-  const container = document.querySelector(`.${CLASS_NAMES.containers.local}`);
+  const container = document
+    .querySelector(`.${CLASS_NAMES.containers.localMain}`);
   if (container == null) { return; }
 
   const controlsElement = createControlsComponent();
@@ -125,7 +252,7 @@ function recreateControlsComponent() {
 }
 
 function removeRemotePlayersContainer() {
-  const element = getRemoteContainerElement();
+  const element = getRemoteContainer();
   if (element == null) { return; }
 
   element.parentElement.removeChild(element);
@@ -133,12 +260,6 @@ function removeRemotePlayersContainer() {
 
 export function createLocalCanvasSection() {
   return createCanvasSection(240, 400, 20, 20);
-}
-
-export function createLocalContainerElement() {
-  const element = document.createElement(HTML_ELEMENTS.div);
-  element.classList.add(CLASS_NAMES.containers.local);
-  return element;
 }
 
 export function createControlsComponent() {
@@ -170,6 +291,15 @@ export function createControlsComponent() {
   section.appendChild(container);
 
   return section;
+}
+
+export function createGamesBoardComponent() {
+  const container = getGamesBoardContainerElement();
+  const loader = getGamesBoardLoaderElement();
+
+  container.append(loader);
+
+  return container;
 }
 
 export function createLocalGameComponent(scoreSection, canvasElement) {
@@ -258,12 +388,22 @@ export function getBodyElement() {
   return document.querySelector(CLASS_NAMES.body);
 }
 
-export function getContainerElement() {
+export function getContainer() {
   const element = document.querySelector(`.${CLASS_NAMES.container}`);
   return element || createContainerElement();
 }
 
-export function getRemoteContainerElement() {
+export function getLocalContainer() {
+  const element = document.querySelector(`.${CLASS_NAMES.containers.local}`);
+  return element || createLocalContainerElement();
+}
+
+export function getLocalMainContainer() {
+  const element = document.querySelector(`.${CLASS_NAMES.containers.localMain}`);
+  return element || createLocalMainContainerElement();
+}
+
+export function getRemoteContainer() {
   const element = document.querySelector(`.${CLASS_NAMES.containers.remote}`);
   return element || createRemoteContainerElement();
 }
@@ -292,6 +432,23 @@ export function showElement(element, display = 'inherit') {
   element.style.display = display;
 }
 
+export function showGameplay() {
+  const startScreenComponent = document.querySelector(`#${COMPONENTS.start}`);
+  const gameComponent = document.querySelector(`#${COMPONENTS.game}`);
+  const controlsComponent = document.querySelector(`#${COMPONENTS.controls}`);
+  const gamesBoardComponent = document
+    .querySelector(`#${COMPONENTS.gamesBoard}`);
+  
+  const restartContainer = document
+    .querySelector(`.${CLASS_NAMES.containers.restart}`);
+
+  hideElement(startScreenComponent);
+  showElement(gameComponent);
+  showElement(controlsComponent);
+  hideElement(gamesBoardComponent);
+  hideElement(restartContainer);
+}
+
 export function showPlayerNameError() {
   const startComponent = document.querySelector(`#${COMPONENTS.start}`);
   if (startComponent == null) { return; }
@@ -317,4 +474,31 @@ export function showRestartButton(callback) {
   container.appendChild(button);
 
   gameComponent.appendChild(container);
+}
+
+export function updateGamesBoard(games) {
+  const properties = [
+    '#',
+    gameResultModel.playerName,
+    gameResultModel.points,
+    gameResultModel.linesCount,
+    gameResultModel.doublesCount,
+    gameResultModel.triplesCount,
+    gameResultModel.tetrisCount
+  ];
+
+  const container = getGamesBoardContainerElement();
+  const gamesBoardLoader = getGamesBoardLoaderElement();
+  const board = getGamesBoardElement();
+  const headerRow = getGamesBoardHeaderRow(properties);
+  
+  board.appendChild(headerRow);
+
+  games.forEach((game, index) => {
+    board.appendChild(createGamesBoardGameRow(game, index, properties));
+  });
+
+  hideElement(gamesBoardLoader);
+
+  container.appendChild(board);
 }

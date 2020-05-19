@@ -1,9 +1,8 @@
 import { getRandomPiece } from './pieces.js';
-
+import leadersBoardManager from '../managers/leadersBoardManager.js';
 import Arena, { ARENA_EVENTS } from './Arena.js';
 import Player, { PLAYER_EVENTS } from './Player.js';
 import EventsManager from '../managers/EventsManager.js';
-import LeadersBoardManager from '../managers/LeadersBoardManager.js';
 
 const LINES_MESSAGES = [null, null, 'DOBLE 🙌', 'TRIPLE ✨', 'TETRIS 🎉'];
 const LINES_MESSAGES_DELAY = 750;  // ms
@@ -35,7 +34,6 @@ export default class Tetris {
     this.arena = new Arena();
     this.player = new Player();
     this.eventsManager = new EventsManager();
-    this.leadersBoardManager = new LeadersBoardManager();
 
     this._setupArena(this.arena);
     this._setupPlayer(this.player);
@@ -102,7 +100,7 @@ export default class Tetris {
       timestamp: new Date().toUTCString()
     };
 
-    this.leadersBoardManager.writeGameIntoBoard(gameResult)
+    leadersBoardManager.saveGame(gameResult)
       .then(function(docRef) {
         console.log('Document written with ID: ', docRef.id);
       })
@@ -237,6 +235,11 @@ export default class Tetris {
 
   setNumberOfLinesElement(numberOfLinesElement) {
     this.numberOfLinesElement = numberOfLinesElement;
+  }
+
+  setPlayerName(playerName) {
+    if (this.player == null) { return; }
+    this.player.name = playerName;
   }
 
   setPointsElement(pointsElement) {

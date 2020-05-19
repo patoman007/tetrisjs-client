@@ -1,3 +1,5 @@
+import EventsManager from './EventsManager';
+
 const SDK = {
   core: 'https://www.gstatic.com/firebasejs/7.14.4/firebase-app.js',
   analytics: 'https://www.gstatic.com/firebasejs/7.14.4/firebase-analytics.js',
@@ -15,13 +17,22 @@ const config = {
   measurementId: 'G-YM20TTXGL9'
 };
 
+export const FIREBASE_EVENTS = {
+  load: 'firebase-has-been-loaded-event'
+};
+
 export default class FirebaseManager {
 
   constructor() {
     this.firebase = null;
     this.firebaseStore = null;
+    this.events = new EventsManager();
 
     this._loadSDK();
+  }
+
+  _emitFirebaseLoadedEvent() {
+    this.events.emit(FIREBASE_EVENTS.load);
   }
 
   _initFirebase() {
@@ -31,6 +42,8 @@ export default class FirebaseManager {
     this.firebase.initializeApp(config);
     this.firebase.analytics();
     this.firebaseStore = this.firebase.firestore();
+
+    this._emitFirebaseLoadedEvent();
   }
 
   _loadSDK() {
@@ -53,5 +66,8 @@ export default class FirebaseManager {
       });
   }
 
-}
+  on(eventName, eventHandler) {
+    this.events.subscribe(eventName, eventHandler);
+  }
 
+}

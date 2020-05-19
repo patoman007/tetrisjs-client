@@ -1,6 +1,10 @@
 import * as uiUtils from './ui-utils.js';
 import * as setups from './setups.js';
 
+import leadersBoardManager, { 
+  LEADERS_BOARD_EVENTS
+} from '../managers/leadersBoardManager.js';
+
 import Tetris from './Tetris.js';
 import Timer from '../Timer.js';
 import InputManager from '../managers/InputManager.js';
@@ -21,6 +25,8 @@ export default class TetrisManager {
     this.localPlayer = null;
     this.remotePlayers = new Map();
     this.eventsManager = new EventsManager();
+
+    this._initLeadersBoard();
   }
 
   _emitLocalPlayerHasBennInflated() {
@@ -31,28 +37,53 @@ export default class TetrisManager {
     this.eventsManager.emit(TETRIS_MANAGER_EVENTS.players.local.start);
   }
 
+  _getLeadersBoardGames() {
+    leadersBoardManager.getTopTenGames()
+      .then((games) => {
+        console.log(games);
+        uiUtils.updateGamesBoard(games);
+      });
+  }
+
+  _initLeadersBoard() {
+    leadersBoardManager
+      .on(LEADERS_BOARD_EVENTS.load, this._getLeadersBoardGames.bind(this));
+  }
+
+  _inflateLeadersBoard(games) {
+    const container = uiUtils.getContainer();
+    const board = uiUtils.createGamesBoardComponent(games);
+    container.appendChild(board);
+  }
+
   _inflateLocalGameplay(scoreSection, canvasElement, startButton) {
     const body = uiUtils.getBodyElement();
-    const containerElement = uiUtils.getContainerElement();
-    const localContainerElement = uiUtils.createLocalContainerElement();
-    const startScreenElement = uiUtils.createStartComponent(startButton);
-    const localGameElement = uiUtils.createLocalGameComponent(scoreSection, canvasElement);
-    const controlsElement = uiUtils.createControlsComponent();
+    const container = uiUtils.getContainer();
+    const localContainer = uiUtils.getLocalContainer();
+    const localMainContainer = uiUtils.getLocalMainContainer();
 
-    localContainerElement.appendChild(startScreenElement);
-    localContainerElement.appendChild(localGameElement);
-    localContainerElement.appendChild(controlsElement);
+    const startScreenComponent = uiUtils.createStartComponent(startButton);
+    const localGameComponent = uiUtils.createLocalGameComponent(scoreSection, canvasElement);
+    const controlsComponent = uiUtils.createControlsComponent();
+    const gamesBoardComponent = uiUtils.createGamesBoardComponent();
 
-    uiUtils.hideElement(localGameElement);
+    localMainContainer.appendChild(startScreenComponent);
+    localMainContainer.appendChild(localGameComponent);
+    localMainContainer.appendChild(controlsComponent);
 
-    containerElement.appendChild(localContainerElement);
+    uiUtils.hideElement(localGameComponent);
 
-    body.appendChild(containerElement);
+    localContainer.appendChild(localMainContainer);
+    localContainer.appendChild(gamesBoardComponent);
+
+    container.appendChild(localContainer);
+
+    body.appendChild(container);
   }
 
   _inflateRemoteGameplay(clientId, playerName, score, canvas) {
-    const container = uiUtils.getContainerElement();
-    const remoteContainer = uiUtils.getRemoteContainerElement();
+    const container = uiUtils.getContainer();
+    const remoteContainer = uiUtils.getRemoteContainer();
     const game = uiUtils.createRemoteGameElement(clientId, playerName, score, canvas);
 
     remoteContainer.appendChild(game);
@@ -116,13 +147,6 @@ export default class TetrisManager {
     this.eventsManager.subscribe(eventName, callback);
   }
 
-  removeRemotePlayer(connectionId) {
-    const containerElement = document.querySelector(`#${connectionId}`);
-    if (containerElement == null) { return; }
-
-    containerElement.parentElement.removeChild(containerElement);
-  }
-
   onPeersAreEmpty() {
     uiUtils.removePeersContainer();
 
@@ -130,6 +154,13 @@ export default class TetrisManager {
     if (input == null || tetris == null) { return; }
 
     setups.setupInputHandler(input, tetris);
+  }
+
+  removeRemotePlayer(connectionId) {
+    const containerElement = document.querySelector(`#${connectionId}`);
+    if (containerElement == null) { return; }
+
+    containerElement.parentElement.removeChild(containerElement);
   }
 
 }

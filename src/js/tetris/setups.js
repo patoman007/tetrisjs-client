@@ -8,13 +8,20 @@ function addClass(element, className) {
   element.classList.add(className);
 }
 
-function isInputNameValid(inputName) {
-  return inputName.value.length > 0 && inputName.value != '';
+function getPlayerName() {
+  const inputName = document.querySelector('#inputName');
+  if (inputName == null) { return null; }
+
+  if (!isValidInputName(inputName)) {
+    uiUtils.showPlayerNameError();
+    return null;
+  }
+
+  return inputName.value;
 }
 
-function removeClass(element, className) {
-  if (element == null) { return; }
-  element.classList.remove(className);
+function isValidInputName(inputName) {
+  return inputName.value.length > 0 && inputName.value != '';
 }
 
 function keyPressed(keyElement, callback) {
@@ -27,20 +34,12 @@ function keyReleased(keyElement) {
 }
 
 function onStartButtonClicked(tetris, timer, startCallback) {
-  const inputName = document.querySelector('#inputName');
-
-  if (inputName == null) { return; }
-
-  if (!isInputNameValid(inputName)) {
-    uiUtils.showPlayerNameError();
-    return;
-  }
-
-  const playerName = inputName.value.toUpperCase();
-  storageManager.persistPlayerName(playerName);
-  tetris.player.name = playerName;
+  const playerName = getPlayerName();
   
-  showGameplay();
+  tetris.setPlayerName(playerName);
+  storageManager.persistPlayerName(playerName);
+  
+  uiUtils.showGameplay();
 
   tetris.reset();
   setupTimer(tetris, timer);
@@ -51,16 +50,9 @@ function onStartButtonClicked(tetris, timer, startCallback) {
   }
 }
 
-function showGameplay() {
-  const startScreen = document.querySelector('#startComponent');
-  const gameplay = document.querySelector('#gameComponent');
-  const restart = document.querySelector('.restart-container');
-  const controls = document.querySelector('#controlsComponent');
-
-  uiUtils.hideElement(startScreen);
-  uiUtils.showElement(gameplay);
-  uiUtils.showElement(controls);
-  uiUtils.hideElement(restart);
+function removeClass(element, className) {
+  if (element == null) { return; }
+  element.classList.remove(className);
 }
 
 export function setupInputHandler(input, tetris) {
